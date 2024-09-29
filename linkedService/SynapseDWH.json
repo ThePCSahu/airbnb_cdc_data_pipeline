@@ -7,11 +7,11 @@
 		"typeProperties": {
 			"server": "poonamsynapse.sql.azuresynapse.net",
 			"database": "synapse_dwh",
-			"encrypt": "mandatory",
+			"encrypt": "optional",
 			"trustServerCertificate": true,
 			"authenticationType": "SQL",
 			"userName": "sqladminuser",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDE3MDJBNTZDLUJEMzYtNEU2Ni1BNjc3LTRCQTdCQjM3MDA3RV81YmY5MGIzMS0wNGYxLTQyZWItYTI4YS03YjcwYjFmMjhiNzMiDQp9"
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDE3MDJBNTZDLUJEMzYtNEU2Ni1BNjc3LTRCQTdCQjM3MDA3RV9mZGM0YjQ0OS1jM2NlLTQzYTAtODU1NS1lNTY3YzUxOGIyZGQiDQp9"
 		}
 	}
 }
