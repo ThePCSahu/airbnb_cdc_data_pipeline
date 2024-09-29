@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'CustomerDataADLS'"
 		},
-		"SynapseDWH_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SynapseDWH'"
-		},
 		"CustomerDataADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://strgacct0101.dfs.core.windows.net/"
@@ -30,10 +26,6 @@
 		"SynapseDWH_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "synapse_dwh"
-		},
-		"SynapseDWH_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "sqladminuser"
 		},
 		"containerUri": {
 			"type": "string",
@@ -68,9 +60,6 @@
 					"CustomerDataADLS_accountKey": {
 						"value": "[parameters('CustomerDataADLS_accountKey')]"
 					},
-					"SynapseDWH_password": {
-						"value": "[parameters('SynapseDWH_password')]"
-					},
 					"CustomerDataADLS_properties_typeProperties_url": {
 						"value": "[parameters('CustomerDataADLS_properties_typeProperties_url')]"
 					},
@@ -79,9 +68,6 @@
 					},
 					"SynapseDWH_properties_typeProperties_database": {
 						"value": "[parameters('SynapseDWH_properties_typeProperties_database')]"
-					},
-					"SynapseDWH_properties_typeProperties_userName": {
-						"value": "[parameters('SynapseDWH_properties_typeProperties_userName')]"
 					}
 				}
 			},

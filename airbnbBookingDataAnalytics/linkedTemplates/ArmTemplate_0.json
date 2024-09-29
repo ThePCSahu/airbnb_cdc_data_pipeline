@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'CustomerDataADLS'"
 		},
-		"SynapseDWH_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SynapseDWH'"
-		},
 		"CustomerDataADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://strgacct0101.dfs.core.windows.net/"
@@ -30,10 +26,6 @@
 		"SynapseDWH_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "synapse_dwh"
-		},
-		"SynapseDWH_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "sqladminuser"
 		}
 	},
 	"variables": {
@@ -80,14 +72,9 @@
 				"typeProperties": {
 					"server": "[parameters('SynapseDWH_properties_typeProperties_server')]",
 					"database": "[parameters('SynapseDWH_properties_typeProperties_database')]",
-					"encrypt": "optional",
+					"encrypt": "mandatory",
 					"trustServerCertificate": true,
-					"authenticationType": "SQL",
-					"userName": "[parameters('SynapseDWH_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('SynapseDWH_password')]"
-					}
+					"authenticationType": "SystemAssignedManagedIdentity"
 				}
 			},
 			"dependsOn": []

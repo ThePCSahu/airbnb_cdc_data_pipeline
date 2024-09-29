@@ -11,9 +11,6 @@
 		"CustomerDataADLS_accountKey": {
 			"value": ""
 		},
-		"SynapseDWH_password": {
-			"value": ""
-		},
 		"CustomerDataADLS_properties_typeProperties_url": {
 			"value": "https://strgacct0101.dfs.core.windows.net/"
 		},
@@ -22,9 +19,6 @@
 		},
 		"SynapseDWH_properties_typeProperties_database": {
 			"value": "synapse_dwh"
-		},
-		"SynapseDWH_properties_typeProperties_userName": {
-			"value": "sqladminuser"
 		},
 		"containerUri": {
 			"value": ""
