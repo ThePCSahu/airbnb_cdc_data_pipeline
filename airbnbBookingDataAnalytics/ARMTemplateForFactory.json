@@ -153,8 +153,7 @@
 									"BookingData": {},
 									"SynapseForLookup": {},
 									"SynapseFactWrite": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {
 								"linkedService": {
@@ -859,7 +858,7 @@
 				"typeProperties": {
 					"server": "[parameters('SynapseDWH_properties_typeProperties_server')]",
 					"database": "[parameters('SynapseDWH_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
+					"encrypt": "optional",
 					"trustServerCertificate": true,
 					"authenticationType": "SQL",
 					"userName": "[parameters('SynapseDWH_properties_typeProperties_userName')]",
@@ -1051,6 +1050,18 @@
 				"[concat(variables('factoryId'), '/datasets/fact_bookings_dataset_synapse_dwh')]",
 				"[concat(variables('factoryId'), '/linkedServices/CustomerDataADLS')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credential1')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/a61d4640-43a5-4fb4-ab48-722cdfb61490/resourceGroups/rg_neu/providers/Microsoft.ManagedIdentity/userAssignedIdentities/my_managed_identity"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
