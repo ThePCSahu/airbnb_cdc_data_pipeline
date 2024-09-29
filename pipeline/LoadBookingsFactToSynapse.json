@@ -24,7 +24,7 @@
 							"referenceName": "CustomerDataADLS",
 							"type": "LinkedServiceReference"
 						},
-						"folderPath": "airbnb"
+						"folderPath": "airbnb/staging_temp"
 					},
 					"compute": {
 						"coreCount": 8,

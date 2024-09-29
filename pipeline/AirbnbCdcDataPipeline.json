@@ -60,6 +60,9 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[airbnb].[BookingAggregationProc]"
+				},
 				"linkedServiceName": {
 					"referenceName": "SynapseDWH",
 					"type": "LinkedServiceReference"
