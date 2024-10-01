@@ -13,19 +13,19 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "fact_bookings_dataset_synapse_dwh",
+						"referenceName": "fact_bookings_dataset_dwh",
 						"type": "DatasetReference"
 					},
-					"name": "SynapseForLookup"
+					"name": "DWHForLookup"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "fact_bookings_dataset_synapse_dwh",
+						"referenceName": "fact_bookings_dataset_dwh",
 						"type": "DatasetReference"
 					},
-					"name": "SynapseFactWrite",
+					"name": "DWHFactWrite",
 					"rejectedDataLinkedService": {
 						"referenceName": "CustomerDataADLS",
 						"type": "LinkedServiceReference"
@@ -89,8 +89,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table',",
-				"     staged: true) ~> SynapseForLookup",
+				"     format: 'table') ~> DWHForLookup",
 				"BookingData split(check_out_date<check_in_date,",
 				"     disjoint: true) ~> DataQualityCheck@(BadRecords, AcceptedRecords)",
 				"DataQualityCheck@AcceptedRecords derive(stay_duration = (toTimestamp(check_out_date) - toTimestamp(check_in_date))/86400000,",
@@ -109,13 +108,13 @@
 				"          property_id = property_id,",
 				"          amount = amount,",
 				"          currency = currency) ~> DerivedColumns",
-				"DerivedColumns, SynapseForLookup lookup(DerivedColumns@booking_id == SynapseForLookup@booking_id,",
+				"DerivedColumns, DWHForLookup lookup(DerivedColumns@booking_id == DWHForLookup@booking_id,",
 				"     multiple: false,",
 				"     pickup: 'first',",
 				"     desc(SynapseForLookup@timestamp, true),",
 				"     broadcast: 'auto')~> LookupInSynapse",
-				"LookupInSynapse alterRow(insertIf(isNull(SynapseForLookup@booking_id)),",
-				"     updateIf(not(isNull(SynapseForLookup@booking_id)))) ~> AlterRowForUpdate",
+				"LookupInSynapse alterRow(insertIf(isNull(DWHForLookup@booking_id)),",
+				"     updateIf(not(isNull(DWHForLookup@booking_id)))) ~> AlterRowForUpdate",
 				"AlterRowForUpdate select(mapColumn(",
 				"          check_out_date = DerivedColumns@check_out_date,",
 				"          customer_id = DerivedColumns@customer_id,",
@@ -162,12 +161,10 @@
 				"     upsertable:false,",
 				"     keys:['booking_id'],",
 				"     format: 'table',",
-				"     staged: true,",
-				"     allowCopyCommand: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SynapseFactWrite"
+				"     errorHandlingOption: 'stopOnFirstError') ~> DWHFactWrite"
 			]
 		}
 	}
