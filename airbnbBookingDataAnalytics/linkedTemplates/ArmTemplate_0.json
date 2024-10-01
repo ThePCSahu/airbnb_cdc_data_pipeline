@@ -23,18 +23,6 @@
 			"type": "string",
 			"defaultValue": "https://strgacct0101.dfs.core.windows.net/"
 		},
-		"SynapseDWH_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "poonamsynapse.sql.azuresynapse.net"
-		},
-		"SynapseDWH_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "synapse_dwh"
-		},
-		"AzureKeyVault_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://poonamkeyvault1122.vault.azure.net/"
-		},
 		"dwh_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "poonamtest.database.windows.net"
@@ -83,23 +71,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SynapseDWH')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDW",
-				"typeProperties": {
-					"server": "[parameters('SynapseDWH_properties_typeProperties_server')]",
-					"database": "[parameters('SynapseDWH_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
-					"trustServerCertificate": true,
-					"authenticationType": "SystemAssignedManagedIdentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/credential1')]",
 			"type": "Microsoft.DataFactory/factories/credentials",
 			"apiVersion": "2018-06-01",
@@ -107,19 +78,6 @@
 				"type": "ManagedIdentity",
 				"typeProperties": {
 					"resourceId": "/subscriptions/a61d4640-43a5-4fb4-ab48-722cdfb61490/resourceGroups/rg_neu/providers/Microsoft.ManagedIdentity/userAssignedIdentities/my_managed_identity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureKeyVault')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
