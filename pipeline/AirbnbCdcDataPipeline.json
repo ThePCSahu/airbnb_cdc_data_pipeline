@@ -12,7 +12,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "LoadCustomerDimToSynapse",
+						"referenceName": "LoadCustomerDimToDWH",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": false
@@ -35,7 +35,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "LoadBookingsFactToSynapse",
+						"referenceName": "LoadBookingsFactToDWH",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": false
@@ -60,6 +60,9 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[airbnb].[BookingAggregationProc]"
+				},
 				"linkedServiceName": {
 					"referenceName": "dwh",
 					"type": "LinkedServiceReference"

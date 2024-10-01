@@ -1,5 +1,5 @@
 {
-	"name": "LoadCustomerDimToSynapse",
+	"name": "LoadCustomerDimToDWH",
 	"properties": {
 		"activities": [
 			{

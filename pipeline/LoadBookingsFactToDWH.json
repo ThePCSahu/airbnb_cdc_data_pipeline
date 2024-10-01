@@ -20,11 +20,7 @@
 						"type": "DataFlowReference"
 					},
 					"staging": {
-						"linkedService": {
-							"referenceName": "CustomerDataADLS",
-							"type": "LinkedServiceReference"
-						},
-						"folderPath": "airbnb/staging_temp"
+						"folderPath": ""
 					},
 					"compute": {
 						"coreCount": 8,
