@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'CustomerDataADLS'"
 		},
+		"dwh_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'dwh'"
+		},
 		"CustomerDataADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://strgacct0101.dfs.core.windows.net/"
@@ -26,6 +30,22 @@
 		"SynapseDWH_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "synapse_dwh"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://poonamkeyvault1122.vault.azure.net/"
+		},
+		"dwh_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "poonamtest.database.windows.net"
+		},
+		"dwh_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "poonamtestdb"
+		},
+		"dwh_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "admin1"
 		}
 	},
 	"variables": {
@@ -87,6 +107,41 @@
 				"type": "ManagedIdentity",
 				"typeProperties": {
 					"resourceId": "/subscriptions/a61d4640-43a5-4fb4-ab48-722cdfb61490/resourceGroups/rg_neu/providers/Microsoft.ManagedIdentity/userAssignedIdentities/my_managed_identity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dwh')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('dwh_properties_typeProperties_server')]",
+					"database": "[parameters('dwh_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('dwh_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('dwh_password')]"
+					}
 				}
 			},
 			"dependsOn": []
@@ -282,16 +337,16 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dim_customer_dataset_synapse_dwh')]",
+			"name": "[concat(parameters('factoryName'), '/dim_customer_dataset_dwh')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SynapseDWH",
+					"referenceName": "dwh",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlDWTable",
+				"type": "AzureSqlTable",
 				"schema": [
 					{
 						"name": "customer_id",
@@ -374,20 +429,20 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SynapseDWH')]"
+				"[concat(variables('factoryId'), '/linkedServices/dwh')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/fact_bookings_dataset_synapse_dwh')]",
+			"name": "[concat(parameters('factoryName'), '/fact_bookings_dataset_dwh')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "SynapseDWH",
+					"referenceName": "dwh",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlDWTable",
+				"type": "AzureSqlTable",
 				"schema": [
 					{
 						"name": "booking_id",
@@ -469,11 +524,11 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SynapseDWH')]"
+				"[concat(variables('factoryId'), '/linkedServices/dwh')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LoadCustomerDimToSynapse')]",
+			"name": "[concat(parameters('factoryName'), '/LoadCustomerDimToDWH')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -558,15 +613,16 @@
 											}
 										},
 										"sink": {
-											"type": "SqlDWSink",
-											"writeBehavior": "Upsert",
+											"type": "AzureSqlSink",
+											"writeBehavior": "upsert",
 											"upsertSettings": {
+												"useTempDB": true,
 												"keys": [
 													"customer_id"
-												],
-												"interimSchemaName": ""
+												]
 											},
-											"sqlWriterUseTableLock": false
+											"sqlWriterUseTableLock": false,
+											"disableMetricsCollection": false
 										},
 										"enableStaging": false,
 										"translator": {
@@ -587,7 +643,7 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "dim_customer_dataset_synapse_dwh",
+											"referenceName": "dim_customer_dataset_dwh",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
@@ -719,7 +775,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/customer_raw_dataset_adls')]",
-				"[concat(variables('factoryId'), '/datasets/dim_customer_dataset_synapse_dwh')]",
+				"[concat(variables('factoryId'), '/datasets/dim_customer_dataset_dwh')]",
 				"[concat(variables('factoryId'), '/datasets/customer_archieved_dataset_adls')]"
 			]
 		},
@@ -740,19 +796,19 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "fact_bookings_dataset_synapse_dwh",
+								"referenceName": "fact_bookings_dataset_dwh",
 								"type": "DatasetReference"
 							},
-							"name": "SynapseForLookup"
+							"name": "DWHForLookup"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "fact_bookings_dataset_synapse_dwh",
+								"referenceName": "fact_bookings_dataset_dwh",
 								"type": "DatasetReference"
 							},
-							"name": "SynapseFactWrite",
+							"name": "DWHFactWrite",
 							"rejectedDataLinkedService": {
 								"referenceName": "CustomerDataADLS",
 								"type": "LinkedServiceReference"
@@ -767,7 +823,7 @@
 							"name": "DerivedColumns"
 						},
 						{
-							"name": "LookupInSynapse"
+							"name": "LookupInDWH"
 						},
 						{
 							"name": "AlterRowForUpdate"
@@ -816,8 +872,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table',",
-						"     staged: true) ~> SynapseForLookup",
+						"     format: 'table') ~> DWHForLookup",
 						"BookingData split(check_out_date<check_in_date,",
 						"     disjoint: true) ~> DataQualityCheck@(BadRecords, AcceptedRecords)",
 						"DataQualityCheck@AcceptedRecords derive(stay_duration = (toTimestamp(check_out_date) - toTimestamp(check_in_date))/86400000,",
@@ -836,13 +891,13 @@
 						"          property_id = property_id,",
 						"          amount = amount,",
 						"          currency = currency) ~> DerivedColumns",
-						"DerivedColumns, SynapseForLookup lookup(DerivedColumns@booking_id == SynapseForLookup@booking_id,",
+						"DerivedColumns, DWHForLookup lookup(DerivedColumns@booking_id == DWHForLookup@booking_id,",
 						"     multiple: false,",
 						"     pickup: 'first',",
-						"     desc(SynapseForLookup@timestamp, true),",
-						"     broadcast: 'auto')~> LookupInSynapse",
-						"LookupInSynapse alterRow(insertIf(isNull(SynapseForLookup@booking_id)),",
-						"     updateIf(not(isNull(SynapseForLookup@booking_id)))) ~> AlterRowForUpdate",
+						"     desc(DWHForLookup@timestamp, true),",
+						"     broadcast: 'auto')~> LookupInDWH",
+						"LookupInDWH alterRow(insertIf(isNull(DWHForLookup@booking_id)),",
+						"     updateIf(not(isNull(DWHForLookup@booking_id)))) ~> AlterRowForUpdate",
 						"AlterRowForUpdate select(mapColumn(",
 						"          check_out_date = DerivedColumns@check_out_date,",
 						"          customer_id = DerivedColumns@customer_id,",
@@ -889,29 +944,27 @@
 						"     upsertable:false,",
 						"     keys:['booking_id'],",
 						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     saveOrder: 1,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> SynapseFactWrite"
+						"     errorHandlingOption: 'stopOnFirstError') ~> DWHFactWrite"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/bookings_data_cosmos')]",
-				"[concat(variables('factoryId'), '/datasets/fact_bookings_dataset_synapse_dwh')]",
+				"[concat(variables('factoryId'), '/datasets/fact_bookings_dataset_dwh')]",
 				"[concat(variables('factoryId'), '/linkedServices/CustomerDataADLS')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LoadBookingsFactToSynapse')]",
+			"name": "[concat(parameters('factoryName'), '/LoadBookingsFactToDWH')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "UpsertInSynapse",
+						"name": "BookingsUpsertInDWH",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -929,16 +982,13 @@
 								"parameters": {},
 								"datasetParameters": {
 									"BookingData": {},
-									"SynapseForLookup": {},
-									"SynapseFactWrite": {}
-								}
+									"DWHForLookup": {},
+									"DWHFactWrite": {}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {
-								"linkedService": {
-									"referenceName": "CustomerDataADLS",
-									"type": "LinkedServiceReference"
-								},
-								"folderPath": "airbnb/staging_temp"
+								"folderPath": ""
 							},
 							"compute": {
 								"coreCount": 8,
@@ -960,8 +1010,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/BookingDataTransformation')]",
-				"[concat(variables('factoryId'), '/linkedServices/CustomerDataADLS')]"
+				"[concat(variables('factoryId'), '/dataflows/BookingDataTransformation')]"
 			]
 		},
 		{
@@ -980,7 +1029,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "LoadCustomerDimToSynapse",
+								"referenceName": "LoadCustomerDimToDWH",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": false,
@@ -1004,7 +1053,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "LoadBookingsFactToSynapse",
+								"referenceName": "LoadBookingsFactToDWH",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": false,
@@ -1034,7 +1083,7 @@
 							"storedProcedureName": "[[airbnb].[BookingAggregationProc]"
 						},
 						"linkedServiceName": {
-							"referenceName": "SynapseDWH",
+							"referenceName": "dwh",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -1045,9 +1094,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/LoadCustomerDimToSynapse')]",
-				"[concat(variables('factoryId'), '/pipelines/LoadBookingsFactToSynapse')]",
-				"[concat(variables('factoryId'), '/linkedServices/SynapseDWH')]"
+				"[concat(variables('factoryId'), '/pipelines/LoadCustomerDimToDWH')]",
+				"[concat(variables('factoryId'), '/pipelines/LoadBookingsFactToDWH')]",
+				"[concat(variables('factoryId'), '/linkedServices/dwh')]"
 			]
 		}
 	]

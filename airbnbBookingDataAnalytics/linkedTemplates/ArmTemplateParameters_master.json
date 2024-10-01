@@ -11,6 +11,9 @@
 		"CustomerDataADLS_accountKey": {
 			"value": ""
 		},
+		"dwh_password": {
+			"value": ""
+		},
 		"CustomerDataADLS_properties_typeProperties_url": {
 			"value": "https://strgacct0101.dfs.core.windows.net/"
 		},
@@ -19,6 +22,18 @@
 		},
 		"SynapseDWH_properties_typeProperties_database": {
 			"value": "synapse_dwh"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://poonamkeyvault1122.vault.azure.net/"
+		},
+		"dwh_properties_typeProperties_server": {
+			"value": "poonamtest.database.windows.net"
+		},
+		"dwh_properties_typeProperties_database": {
+			"value": "poonamtestdb"
+		},
+		"dwh_properties_typeProperties_userName": {
+			"value": "admin1"
 		},
 		"containerUri": {
 			"value": ""
