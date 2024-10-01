@@ -40,7 +40,7 @@
 					"name": "DerivedColumns"
 				},
 				{
-					"name": "LookupInSynapse"
+					"name": "LookupInDWH"
 				},
 				{
 					"name": "AlterRowForUpdate"
@@ -111,9 +111,9 @@
 				"DerivedColumns, DWHForLookup lookup(DerivedColumns@booking_id == DWHForLookup@booking_id,",
 				"     multiple: false,",
 				"     pickup: 'first',",
-				"     desc(SynapseForLookup@timestamp, true),",
-				"     broadcast: 'auto')~> LookupInSynapse",
-				"LookupInSynapse alterRow(insertIf(isNull(DWHForLookup@booking_id)),",
+				"     desc(DWHForLookup@timestamp, true),",
+				"     broadcast: 'auto')~> LookupInDWH",
+				"LookupInDWH alterRow(insertIf(isNull(DWHForLookup@booking_id)),",
 				"     updateIf(not(isNull(DWHForLookup@booking_id)))) ~> AlterRowForUpdate",
 				"AlterRowForUpdate select(mapColumn(",
 				"          check_out_date = DerivedColumns@check_out_date,",
