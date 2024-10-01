@@ -1,9 +1,9 @@
 {
-	"name": "LoadBookingsFactToSynapse",
+	"name": "LoadBookingsFactToDWH",
 	"properties": {
 		"activities": [
 			{
-				"name": "UpsertInSynapse",
+				"name": "BookingsUpsertInDWH",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
