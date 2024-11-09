@@ -6,6 +6,7 @@
 - **Airflow**
 - **Snowflake**
 - **Hadoop**
+- **Azure Data Lake Storage**
 
 ## Overview:
 This pipeline is designed to ingest and process car rental data using batch processing and Slowly Changing Dimension (SCD) Type 2 (SCD2) merge strategy. The pipeline consists of two main components:
@@ -17,15 +18,15 @@ Airflow is used to orchestrate the following tasks:
 
 1. **Get Execution Date**: Fetch the execution date for the batch to be processed.
 2. **SCD2 Merge**: 
-    - Reads daily customer data from **Azure Data Lake Storage** using a **Snowflake External Stage**.
+    - Reads daily customer raw data from **Azure Data Lake Storage** using a **Snowflake External Stage**.
     - Performs SCD2 merge to update the **customer_dim** table in Snowflake.
 3. **Submit Spark Job**: 
     - Submits a Spark job to the cluster to perform additional operations.
 
 ### Spark Job Tasks:
 The Spark job performs the following tasks:
-1. **Read Dimension Tables**: Reads the **location_dim**, **date_dim**, and **car_dim** tables from Snowflake.
-2. **Read and Clean Data**: Reads the daily car rental data from HDFS, applies necessary data cleaning steps.
+1. **Read Dimension Tables**: Reads the static **location_dim**, **date_dim**, and **car_dim** tables and **customer_dim** scd table from Snowflake.
+2. **Read and Clean Data**: Reads the daily car rental raw data from HDFS, applies necessary data cleaning steps.
 3. **Transform Data**: Joins the cleaned rental data with dimension data and applies any required transformations.
 4. **Load to Snowflake**: Saves the transformed data into the **rentals_fact** table in Snowflake.
 
@@ -34,7 +35,7 @@ The Spark job performs the following tasks:
 ### Step 1: Set up Azure Data Lake Storage
 1. Log in to your **Azure** account and set up **Azure Data Lake Storage**.
 2. Obtain the **SAS Token** for secure access to the storage.
-3. Create the required directory and upload the customer datasets to the directory.
+3. Create the required directory and upload the **customer raw data** to the directory.
 
 ### Step 2: Snowflake Setup
 1. Log in to your **Snowflake** account.
@@ -53,7 +54,7 @@ The Spark job performs the following tasks:
    - **Spark**
 
 ### Step 4: HDFS Setup
-1. Place the **car rental data** in the appropriate **HDFS location** for processing by the Spark job.
+1. Place the **car rental raw data** in the appropriate **HDFS location** for processing by the Spark job.
 
 ### Step 5: Configuration Files
 1. Review and configure the following files:

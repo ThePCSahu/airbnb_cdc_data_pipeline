@@ -119,8 +119,8 @@ CREATE OR REPLACE TABLE rentals_fact (
 CREATE FILE FORMAT csv_format TYPE=csv;
 
 CREATE OR REPLACE STAGE car_rental_data_stage
-URL='azure://teststorageacctpoosahu.blob.core.windows.net/snowpipe-raw-data/car_rental_data/customer_daily_data/'
-CREDENTIALS=(AZURE_SAS_TOKEN='sp=racwdlmeop&st=2024-10-31T07:29:10Z&se=2024-11-30T15:29:10Z&spr=https&sv=2022-11-02&sr=c&sig=geoavDaFfQCMzSzvyVKurDEvoUsxW1sUvFoDBKM%2BPmM%3D')
+URL='azure://***.blob.core.windows.net/car_rental_data/customer_daily_data/'
+CREDENTIALS=(AZURE_SAS_TOKEN='####')
 FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
 show stages;

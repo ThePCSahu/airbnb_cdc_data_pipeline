@@ -5,10 +5,7 @@ import argparse
 def process_car_rental_data(data_date):
     spark_jars_packages = [
         "net.snowflake:spark-snowflake_2.12:3.0.0",
-        "net.snowflake:snowflake-jdbc:3.16.0"
-
-
-        
+        "net.snowflake:snowflake-jdbc:3.16.0"  
     ]
 
     # Initialize Spark session with Maven dependencies
@@ -59,26 +56,15 @@ def process_car_rental_data(data_date):
 
     # Read dimension tables from Snowflake
     snowflake_options = {
-        "sfURL": "https://bhgqtdj-kw61676.snowflakecomputing.com",
-        "sfAccount": "bhgqtdj-kw61676",
-        "sfUser": "poonamchand97",
-        "sfPassword": "SnowflakePass1@",
+        "sfURL": "https://***-***.snowflakecomputing.com",
+        "sfAccount": "***-***",
+        "sfUser": "****",
+        "sfPassword": "*****",
         "sfDatabase": "car_rental",
         "sfSchema": "PUBLIC",
         "sfWarehouse": "COMPUTE_WH",
         "sfRole": "ACCOUNTADMIN"
     }
-
-    # snowflake_options = {
-    #     "sfURL": "https://***-***.snowflakecomputing.com",
-    #     "sfAccount": "***-***",
-    #     "sfUser": "****",
-    #     "sfPassword": "*****",
-    #     "sfDatabase": "car_rental",
-    #     "sfSchema": "PUBLIC",
-    #     "sfWarehouse": "COMPUTE_WH",
-    #     "sfRole": "ACCOUNTADMIN"
-    # }
     
     SNOWFLAKE_SOURCE_NAME = "snowflake"
 
