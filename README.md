@@ -30,50 +30,73 @@ The Spark job performs the following tasks:
 3. **Transform Data**: Joins the cleaned rental data with dimension data and applies any required transformations.
 4. **Load to Snowflake**: Saves the transformed data into the **rentals_fact** table in Snowflake.
 
-## Setup Steps:
+## System Diagram
+This diagram illustrates the architecture and data flow of the car rental data pipeline, showing the key components and their interactions.
 
-### Step 1: Set up Azure Data Lake Storage
-1. Log in to your **Azure** account and set up **Azure Data Lake Storage**.
-2. Obtain the **SAS Token** for secure access to the storage.
-3. Create the required directory and upload the **customer raw data** to the directory.
+```
++--------------------------+
+|   Airflow Orchestration  |
++--------------------------+
+            |
+            v
++--------------------------+
+|    Get Execution Date    |
++--------------------------+
+            |
+            v
++--------------------------+      +------------------------------+
+|      SCD2 Merge          |      |  Azure Data Lake Storage     |
+| - Reads customer data    | ---> | (External Stage in Snowflake)|
+| - Updates customer_dim   |      +------------------------------+
++--------------------------+
+            |
+            v
++--------------------------+
+|   Submit Spark Job       |
++--------------------------+
+            |
+            v
++--------------------------+
+|   Spark Job (Cluster)    |
++--------------------------+
+            |
+            v
++--------------------------+
+|   Read & Clean Raw       |
+| - car rental data        |
+| - Apply cleaning         |
++--------------------------+
+            |
+            v
++--------------------------+   
+|   Read Dimension Data    |   
+| - location_dim           |   
+| - date_dim               |   
+| - car_dim                |   
+| - customer_dim (SCD2)    |
++--------------------------+
+            |
+            v
++--------------------------+
+|     Transform Data       |
+| - Join with dimensions   |
+| - Apply transformations  |
++--------------------------+
+            |
+            v
++--------------------------+
+|    Load to Snowflake     |
+| - rentals_fact table     |
++--------------------------+
+            |
+            v
++--------------------------+
+|   Snowflake Data Store   |
++--------------------------+
+```
 
-### Step 2: Snowflake Setup
-1. Log in to your **Snowflake** account.
-2. Execute the `snowflake_dwh_setup.sql` file to create the necessary tables and external stage.
-3. Use the SAS token and URL to configure the external stage for reading data from Azure Data Lake.
-
-### Step 3: Airflow Setup
-1. Log in to your **Airflow** account.
-2. Ensure the following Python packages are installed:
-   - `apache-airflow-providers-apache-spark`
-   - `apache-airflow-providers-snowflake`
-3. Verify that the **JAVA_HOME** environment variable is set in Airflow.
-4. Ensure the **spark-submit** utility is installed and accessible in Airflow.
-5. Go to **Admin > Connections** in Airflow and add the connection details for:
-   - **Snowflake**
-   - **Spark**
-
-### Step 4: HDFS Setup
-1. Place the **car rental raw data** in the appropriate **HDFS location** for processing by the Spark job.
-
-### Step 5: Configuration Files
-1. Review and configure the following files:
-   - **airflow_dag.py**: Ensure the correct host, port, table names, and credentials are configured.
-   - **spark_job.py**: Verify the Spark job configuration (e.g., HDFS location, dimension table names, etc.).
-   
-### Step 6: Environment Setup
-- After the setup is complete, place the **DAG file** in the **DAG directory** of your Airflow account.
-- Pass the **execution date** to the DAG, and it will start executing the batch data ingestion pipeline.
-
-## Execution:
-
-- Once the environment is set up and the files are configured correctly, trigger the pipeline from Airflow with the desired **execution date**.
-- The pipeline will perform the following:
-  1. Execute the SCD2 merge on the customer data in Snowflake.
-  2. Submit the Spark job to process the car rental data and load the results into Snowflake.
-
-## Conclusion:
-This pipeline automates the ingestion, transformation, and loading of car rental data, ensuring that historical data is properly tracked and that daily rental data is processed and stored in Snowflake for reporting and analysis.
+## Entity-Relationship Diagram (ERD)
+Representation of the car rental data model and its relationships.
 
 ```
                                   +--------------------+
@@ -123,11 +146,58 @@ This pipeline automates the ingestion, transformation, and loading of car rental
 
 ```
 
+## Setup Steps:
+
+### Step 1: Set up Azure Data Lake Storage
+1. Log in to your **Azure** account and set up **Azure Data Lake Storage**.
+2. Obtain the **SAS Token** for secure access to the storage.
+3. Create the required directory and upload the **customer raw data** to the directory.
+
+### Step 2: Snowflake Setup
+1. Log in to your **Snowflake** account.
+2. Execute the `snowflake_dwh_setup.sql` file to create the necessary tables and external stage.
+3. Use the SAS token and URL to configure the external stage for reading data from Azure Data Lake.
+
+### Step 3: Airflow Setup
+1. Log in to your **Airflow** account.
+2. Ensure the following Python packages are installed:
+   - `apache-airflow-providers-apache-spark`
+   - `apache-airflow-providers-snowflake`
+3. Verify that the **JAVA_HOME** environment variable is set in Airflow.
+4. Ensure the **spark-submit** utility is installed and accessible in Airflow.
+5. Go to **Admin > Connections** in Airflow and add the connection details for:
+   - **Snowflake**
+   - **Spark**
+
+### Step 4: HDFS Setup
+1. Place the **car rental raw data** in the appropriate **HDFS location** for processing by the Spark job.
+
+### Step 5: Configuration Files
+1. Review and configure the following files:
+   - **airflow_dag.py**: Ensure the correct host, port, table names, and credentials are configured.
+   - **spark_job.py**: Verify the Spark job configuration (e.g., HDFS location, dimension table names, etc.).
+   
+### Step 6: Environment Setup
+- After the setup is complete, place the **DAG file** in the **DAG directory** of your Airflow account.
+- Pass the **execution date** to the DAG, and it will start executing the batch data ingestion pipeline.
+
+## Execution:
+
+- Once the environment is set up and the files are configured correctly, trigger the pipeline from Airflow with the desired **execution date**.
+- The pipeline will perform the following:
+  1. Execute the SCD2 merge on the customer data in Snowflake.
+  2. Submit the Spark job to process the car rental data and load the results into Snowflake.
+
+## Conclusion:
+This pipeline automates the ingestion, transformation, and loading of car rental data, ensuring that historical data is properly tracked and that daily rental data is processed and stored in Snowflake for reporting and analysis.
+
+
+
 ```
-+----------------------+        +----------------+        +----------------+
-|  Azure Data Lake     |------> |   Snowflake    |<-------|   Airflow      |
-|     Storage          |        |  (External     |        |  Cluster       |
-+----------------------+        |  Stage, SCD2)  |        +----------------+
++-----------------+        +----------------+        +----------------+
+| Azure Data Lake |------> |   Snowflake    |<-------|   Airflow      |
+|     Storage     |        |  (External     |        |  Cluster       |
++-----------------+        |  Stage, SCD2)  |        +----------------+
                                 |                |              |
 +----------------------+        +----------------+              |
 |       HDFS           |------> | Spark Cluster  |<-------------+
