@@ -190,24 +190,3 @@ Representation of the car rental data model and its relationships.
 
 ## Conclusion:
 This pipeline automates the ingestion, transformation, and loading of car rental data, ensuring that historical data is properly tracked and that daily rental data is processed and stored in Snowflake for reporting and analysis.
-
-
-
-```
-+-----------------+        +----------------+        +----------------+
-| Azure Data Lake |------> |   Snowflake    |<-------|   Airflow      |
-|     Storage     |        |  (External     |        |  Cluster       |
-+-----------------+        |  Stage, SCD2)  |        +----------------+
-                                |                |              |
-+----------------------+        +----------------+              |
-|       HDFS           |------> | Spark Cluster  |<-------------+
-|  (Daily Car Rental   |        |  (Dimensions,  |     
-|    Data)             |        |  Facts)        |     
-+----------------------+        +----------------+     
-                                                          |
-                                                          |
-             +----------------+    +----------------+    +----------------+
-             | Get Batch      |    | Fetch Data &   |    | Submit PySpark |
-             | Execution Date |    | SCD2 Merge     |    | Job            |
-             +----------------+    +----------------+    +----------------+
-```
