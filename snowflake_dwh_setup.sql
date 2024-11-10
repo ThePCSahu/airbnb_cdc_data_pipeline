@@ -84,7 +84,7 @@ INSERT INTO date_dim (date_key, date, year, month, day, quarter) VALUES
 
 CREATE OR REPLACE TABLE customer_dim (
     customer_key INTEGER AUTOINCREMENT PRIMARY KEY,
-    customer_id STRING UNIQUE NOT NULL,
+    customer_id STRING NOT NULL,
     name STRING,
     email STRING,
     phone STRING,
