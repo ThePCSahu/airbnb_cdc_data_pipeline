@@ -96,7 +96,7 @@ This diagram illustrates the architecture and data flow of the car rental data p
 ```
 
 ## Entity-Relationship Diagram (ERD)
-Representation of the car rental data model and its relationships.
+Representation of the car rental data model and its relationships. This data model follows a star schema.
 
 ```
                                   +--------------------+
